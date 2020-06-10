@@ -43,6 +43,7 @@ def check_winner(squares, player)
     count += 1 if a_square.checked_by == player
   end
   winner = true if count == 3
+  p "#{player} wins the game" if winner == true
 end
 
 def validate_regex(input)
@@ -57,10 +58,21 @@ def validate_regex(input)
   input
 end
 
-def player_input(player)
+def valid_coordinate(input, played)
+  
+  while played.key?(input) == true
+    print 'This coordinate has already been played, please choose another: '
+    input = gets.chomp
+
+  end
+  input
+end
+
+def player_input(player, played)
   print "Please input a coordinate for player #{player}: "
   input = gets.chomp
   input = validate_regex(input)
+  input = valid_coordinate(input, played)
   [input, player]
 end
 
@@ -76,13 +88,17 @@ def start_game
   turn = 0
   squares = create_square
   player = 'x'
+  played = {}
   while turn <= 9
     output_board(squares)
-    input = player_input(player)
+    input = player_input(player, played)
     squares = squares.map do |outer|
       outer.map do |inner|
-        inner.checked_by = input[1] if (inner.x == input[0][0]) && (inner.y == input[0][1])
-        p inner
+        if (inner.x == input[0][0]) && (inner.y == input[0][1])
+        inner.checked_by = input[1]
+        played[input[0]] = true
+        end
+        inner
       end
     end
     check_winner(squares, player)
@@ -90,5 +106,7 @@ def start_game
     player = change_player(player)
   end
 end
+
+
 
 start_game
