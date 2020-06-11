@@ -26,24 +26,14 @@ def output_board(squares)
 
   print "   a     b     c
       |     |
-1  #{s[0][0].checked_by}  |  #{s[0][1].checked_by}  |  #{s[0][2].checked_by}
+1  #{s[0][0].checked_by}  |  #{s[1][0].checked_by}  |  #{s[2][0].checked_by}
  _____|_____|_____
       |     |
-2  #{s[1][0].checked_by}  |  #{s[1][1].checked_by}  |  #{s[1][2].checked_by}
+2  #{s[0][1].checked_by}  |  #{s[1][1].checked_by}  |  #{s[2][1].checked_by}
  _____|_____|_____
       |     |
-3  #{s[2][0].checked_by}  |  #{s[2][1].checked_by}  |  #{s[2][2].checked_by}
+3  #{s[0][2].checked_by}  |  #{s[1][2].checked_by}  |  #{s[2][2].checked_by}
       |     |     "
-end
-
-def check_winner(squares, player)
-  winner = false
-  count = 0
-  squares[0].each do |a_square|
-    count += 1 if a_square.checked_by == player
-  end
-  winner = true if count == 3
-  p "#{player} wins the game" if winner == true
 end
 
 def validate_regex(input)
@@ -59,11 +49,10 @@ def validate_regex(input)
 end
 
 def valid_coordinate(input, played)
-  
   while played.key?(input) == true
     print 'This coordinate has already been played, please choose another: '
     input = gets.chomp
-
+    input = validate_regex(input)
   end
   input
 end
@@ -84,27 +73,62 @@ def change_player(player)
   end
 end
 
+def check_winner(squares, player)
+  winner = false
+  count = 0
+  squares.each do |outer|
+    outer.each do |inner|
+     if inner.checked_by == player
+    count += 1
+    end
+  end
+end
+p count
+   if count == 3
+    winner = true
+   else
+    count = 0
+  end
+  if winner == true
+    output_board(squares)
+    p "#{player} wins the game"
+    winner
+  else
+    p "No winner yet"
+    winner
+  end
+end
+
+
+
+
+
 def start_game
-  turn = 0
+  turn = 1
   squares = create_square
   player = 'x'
   played = {}
-  while turn <= 9
+  winner = false
+  while turn <= 9 && winner == false
     output_board(squares)
     input = player_input(player, played)
     squares = squares.map do |outer|
       outer.map do |inner|
         if (inner.x == input[0][0]) && (inner.y == input[0][1])
         inner.checked_by = input[1]
-        played[input[0]] = true
+        played[input[0]] = player
         end
-        inner
+        p inner
       end
     end
-    check_winner(squares, player)
+    if turn > 4
+    winner = check_winner(squares, player)
+    end
+
     turn += 1
     player = change_player(player)
   end
+  p "Game has ended"
 end
 
 
