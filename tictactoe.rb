@@ -79,55 +79,39 @@ def check_winner(squares, player)
   squares.each do |outer|
     count = 0
     outer.each do |inner|
-     if inner.checked_by == player
-    count += 1
-     end
-    if count == 3
-      winner = true
-      break
+      count += 1 if inner.checked_by == player
+      if count == 3
+        winner = true
+        break
+      end
     end
   end
-end
 
-inner_count = 0
+  inner_count = 0
   3.times do
     count_h = 0
     count_d_1 = 0
     count_d_2 = 0
 
     squares.each_with_index do |inner, i|
-    if inner[inner_count].checked_by == player
-      count_h += 1
-    end
-    if inner[i].checked_by == player 
-      count_d_1 += 1
-    end
-    if inner[(i+1)*-1].checked_by == player
-      count_d_2 += 1
-    end
+      count_h += 1 if inner[inner_count].checked_by == player
+      count_d_1 += 1 if inner[i].checked_by == player
+      count_d_2 += 1 if inner[(i + 1) * -1].checked_by == player
 
-    if count_h == 3 || count_d_1 == 3 || count_d_2 == 3
-      winner = true
-      break
+      if count_h == 3 || count_d_1 == 3 || count_d_2 == 3
+        winner = true
+        break
+      end
     end
+    inner_count += 1
   end
-  inner_count += 1
-end
-
-
 
   if winner == true
     output_board(squares)
     p "#{player} wins the game"
-    winner
-  else
-    winner
   end
+  winner
 end
-
-
-
-
 
 def start_game
   turn = 1
@@ -141,25 +125,19 @@ def start_game
     squares = squares.map do |outer|
       outer.map do |inner|
         if (inner.x == input[0][0]) && (inner.y == input[0][1])
-        inner.checked_by = input[1]
-        played[input[0]] = player
+          inner.checked_by = input[1]
+          played[input[0]] = player
         end
         inner
       end
     end
-    if turn > 4
-    winner = check_winner(squares, player)
-    end
-    if turn == 9 && winner == false
-      puts "Tie game"
-    end
+    winner = check_winner(squares, player) if turn > 4
+    puts 'Tie game' if turn == 9 && winner == false
 
     turn += 1
     player = change_player(player)
   end
-  puts "Game has ended"
+  puts 'Game has ended'
 end
-
-
 
 start_game
