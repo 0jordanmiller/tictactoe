@@ -75,30 +75,23 @@ end
 
 def check_winner(squares, player)
   winner = false
-  count = 0
-  squares.each do |outer|
-    count = 0
-    outer.each do |inner|
-      count += 1 if inner.checked_by == player
-      if count == 3
-        winner = true
-        break
-      end
-    end
-  end
 
   inner_count = 0
   3.times do
+    count_v = 0
     count_h = 0
-    count_d_1 = 0
-    count_d_2 = 0
+    count_ldiag = 0
+    count_rdiag = 0
 
     squares.each_with_index do |inner, i|
+      inner.each do |square|
+        count_v += 1 if square.checked_by == player
+      end
       count_h += 1 if inner[inner_count].checked_by == player
-      count_d_1 += 1 if inner[i].checked_by == player
-      count_d_2 += 1 if inner[(i + 1) * -1].checked_by == player
+      count_ldiag += 1 if inner[i].checked_by == player
+      count_rdiag += 1 if inner[(i + 1) * -1].checked_by == player
 
-      if count_h == 3 || count_d_1 == 3 || count_d_2 == 3
+      if count_h == 3 || count_ldiag == 3 || count_rdiag == 3 || count_v == 3
         winner = true
         break
       end
@@ -131,7 +124,7 @@ def start_game
         inner
       end
     end
-    winner = check_winner(squares, player) if turn > 4
+    winner = check_winner(squares, player)
     puts 'Tie game' if turn == 9 && winner == false
 
     turn += 1
