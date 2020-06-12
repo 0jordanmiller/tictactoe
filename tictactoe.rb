@@ -24,7 +24,7 @@ end
 def output_board(squares)
   s = squares
 
-  print "   a     b     c
+  puts "   a     b     c
       |     |
 1  #{s[0][0].checked_by}  |  #{s[1][0].checked_by}  |  #{s[2][0].checked_by}
  _____|_____|_____
@@ -40,7 +40,7 @@ def validate_regex(input)
   false_regex = /[a-c][1-3]/.match?(input)
   unless false_regex
     while false_regex == false
-      print 'Please input a valid coordinate (e.g. a1, b3): '
+      puts '\nlease input a valid coordinate (e.g. a1, b3): '
       input = gets.chomp
       false_regex = /[a-c][1-3]/.match?(input)
     end
@@ -77,24 +77,50 @@ def check_winner(squares, player)
   winner = false
   count = 0
   squares.each do |outer|
+    count = 0
     outer.each do |inner|
      if inner.checked_by == player
     count += 1
+     end
+    if count == 3
+      winner = true
+      break
     end
   end
 end
-p count
-   if count == 3
-    winner = true
-   else
-    count = 0
+
+inner_count = 0
+  3.times do
+    count_h = 0
+    count_d_1 = 0
+    count_d_2 = 0
+
+    squares.each_with_index do |inner, i|
+    if inner[inner_count].checked_by == player
+      count_h += 1
+    end
+    if inner[i].checked_by == player 
+      count_d_1 += 1
+    end
+    if inner[(i+1)*-1].checked_by == player
+      count_d_2 += 1
+    end
+
+    if count_h == 3 || count_d_1 == 3 || count_d_2 == 3
+      winner = true
+      break
+    end
   end
+  inner_count += 1
+end
+
+
+
   if winner == true
     output_board(squares)
     p "#{player} wins the game"
     winner
   else
-    p "No winner yet"
     winner
   end
 end
@@ -118,17 +144,20 @@ def start_game
         inner.checked_by = input[1]
         played[input[0]] = player
         end
-        p inner
+        inner
       end
     end
     if turn > 4
     winner = check_winner(squares, player)
     end
+    if turn == 9 && winner == false
+      puts "Tie game"
+    end
 
     turn += 1
     player = change_player(player)
   end
-  p "Game has ended"
+  puts "Game has ended"
 end
 
 
